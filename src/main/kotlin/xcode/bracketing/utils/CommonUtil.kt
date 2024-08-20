@@ -4,12 +4,13 @@ import org.jasypt.encryption.pbe.StandardPBEStringEncryptor
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class CommonUtil {
+object CommonUtil {
+
+    private const val EXPIRE_DURATION: Long = (24 * 60 * 60 * 1000).toLong()
+
     fun generateSecureId(): String {
         return UUID.randomUUID().toString()
     }
-
-    private val EXPIRE_DURATION: Long = (24 * 60 * 60 * 1000).toLong()
 
     fun encryptor(value: String?, isEncrypt: Boolean): String {
         val jasypt = StandardPBEStringEncryptor()
@@ -49,4 +50,5 @@ class CommonUtil {
     fun getTomorrowDate(): Date {
         return Date(System.currentTimeMillis() + EXPIRE_DURATION)
     }
+
 }

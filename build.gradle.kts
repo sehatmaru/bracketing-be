@@ -32,13 +32,12 @@ dependencies {
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	compileOnly("org.projectlombok:lombok")
-	runtimeOnly("com.mysql:mysql-connector-j")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	implementation("mysql:mysql-connector-java:8.0.33")
-	implementation("io.jsonwebtoken:jjwt:0.12.6")
+	implementation("io.jsonwebtoken:jjwt:0.9.1")
 	implementation("com.github.ulisesbocchio:jasypt-spring-boot:3.0.5")
 
 }
