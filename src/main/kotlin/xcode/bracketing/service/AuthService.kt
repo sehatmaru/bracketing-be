@@ -37,7 +37,7 @@ class AuthService @Autowired constructor(
 
         val user = userRepository.findByUsernameAndDeletedAtIsNull(request.username)
 
-        if (user == null || !request.password.equals(encryptor(user.password, false))){
+        if (user == null || request.password != encryptor(user.password, false)){
             throw AppException(AUTH_ERROR_MESSAGE)
         }
 
@@ -53,7 +53,7 @@ class AuthService @Autowired constructor(
 
         baseResponse.setSuccess(response)
 
-        return baseResponse;
+        return baseResponse
     }
 
     fun register(request: RegisterRequest): BaseResponse<RegisterResponse> {
