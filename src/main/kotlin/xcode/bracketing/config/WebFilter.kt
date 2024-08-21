@@ -17,7 +17,7 @@ import org.springframework.web.filter.GenericFilterBean
 import xcode.bracketing.exception.AppException
 import xcode.bracketing.shared.ResponseCode
 
-@Service
+//@Service
 class WebFilter : GenericFilterBean() {
 
     override fun doFilter(servletRequest: ServletRequest, servletResponse: ServletResponse, filterChain: FilterChain) {

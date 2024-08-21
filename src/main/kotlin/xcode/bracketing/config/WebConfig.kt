@@ -9,8 +9,8 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import xcode.bracketing.interceptor.UserInterceptor
 
-@Configuration
-@EnableWebMvc
+//@Configuration
+//@EnableWebMvc
 class WebConfig @Autowired constructor(
     private val userInterceptor: UserInterceptor
 ) : WebMvcConfigurer {
