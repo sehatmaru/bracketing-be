@@ -14,28 +14,38 @@ import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.springframework.web.filter.CorsFilter
 import org.springframework.web.filter.GenericFilterBean
-import java.io.IOException
+import xcode.bracketing.exception.AppException
+import xcode.bracketing.shared.ResponseCode
 
 @Service
 class WebFilter : GenericFilterBean() {
 
-    @Throws(IOException::class, ServletException::class)
     override fun doFilter(servletRequest: ServletRequest, servletResponse: ServletResponse, filterChain: FilterChain) {
-        val request: HttpServletRequest = servletRequest as HttpServletRequest
-        val response: HttpServletResponse = servletResponse as HttpServletResponse
-        val authHeader: String = request.getHeader("authorization")
-        if ("OPTIONS" == request.method) {
-            response.status = HttpServletResponse.SC_OK
-            filterChain.doFilter(request, response)
-        } else {
-            if (!authHeader.startsWith("Bearer ")) {
-                throw ServletException()
-            }
-        }
-        val token = authHeader.substring(7)
+        try {
+            val request = servletRequest as HttpServletRequest
+            val response = servletResponse as HttpServletResponse
+            val uri = request.requestURI
 
-        Jwts.parser().setSigningKey("xcode").parseClaimsJws(token).body
-        filterChain.doFilter(request, response)
+            if (uri.startsWith("/api")) {
+                val authHeader = request.getHeader("authorization")
+
+                if ("OPTIONS" == request.method) {
+                    response.status = HttpServletResponse.SC_OK
+                    filterChain.doFilter(request, response)
+                } else {
+                    if (!authHeader.startsWith("Bearer ")) {
+                        throw ServletException()
+                    }
+                }
+                val token = authHeader.substring(7)
+
+                Jwts.parser().setSigningKey("xcode").parseClaimsJws(token).body
+            }
+
+            filterChain.doFilter(request, response)
+        } catch (ex: Exception) {
+            throw AppException(ResponseCode.TOKEN_ERROR_MESSAGE)
+        }
     }
 
     @Bean

@@ -1,16 +1,12 @@
 package xcode.bracketing.domain.response
 
-import lombok.Getter
-import lombok.Setter
 import org.springframework.http.HttpStatus
 import xcode.bracketing.shared.ResponseCode
 
-@Getter
-@Setter
 class BaseResponse<T> {
-    private var statusCode = 0
-    private var message: String? = null
-    private var result: T? = null
+    var statusCode = 0
+    var message: String? = null
+    var result: T? = null
 
     fun setSuccess(data: T) {
         this.statusCode = HttpStatus.OK.value()

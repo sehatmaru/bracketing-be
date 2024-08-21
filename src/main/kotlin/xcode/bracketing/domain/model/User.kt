@@ -11,27 +11,36 @@ import java.util.*
 @Data
 @Builder
 @Entity
-@Table(name = "t_token")
+@Table(name = "t_user")
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
-class Token(@Column(name = "token") var token: String, id: Int, expireAt: Date) {
+class User {
 
     @Id
     @Column(name = "id", length = 36)
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private val id = 0
+    var id = 0
 
-    @Column(name = "user_id")
-    var userId = id
+    @Column(name = "full_name")
+    var fullName = ""
+
+    @Column(name = "username")
+    var username = ""
+
+    @Column(name = "email")
+    var email = ""
+
+    @Column(name = "password")
+    var password = ""
 
     @Column(name = "created_at")
     var createdAt: Date? = null
 
-    @Column(name = "expire_at")
-    private var expireAt: Date? = expireAt
+    @Column(name = "updated_at")
+    var updatedAt: Date? = null
 
-    fun isValid(): Boolean {
-        return !expireAt!!.before(Date())
-    }
+    @Column(name = "deleted_at")
+    var deletedAt: Date? = null
+
 }
