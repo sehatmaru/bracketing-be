@@ -54,7 +54,7 @@ class Tournament {
     var roundStage = 1
 
     @Column(name = "status")
-    var status: TournamentStatus? = null
+    var status: TournamentStatus = TournamentStatus.WAITING
 
     @Column(name = "created_at")
     var createdAt: Date? = null

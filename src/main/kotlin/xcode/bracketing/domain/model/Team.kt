@@ -14,6 +14,9 @@ class Team {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     var id = 0
 
+    @Column(name = "tournament_id")
+    var tournamentId = 0
+
     @Column(name = "name")
     var name = ""
 

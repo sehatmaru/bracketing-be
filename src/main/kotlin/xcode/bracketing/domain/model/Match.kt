@@ -2,6 +2,7 @@ package xcode.bracketing.domain.model
 
 import jakarta.persistence.*
 import org.hibernate.annotations.DynamicUpdate
+import xcode.bracketing.domain.enums.MatchStage
 import xcode.bracketing.domain.enums.MatchStatus
 import java.util.*
 
@@ -22,7 +23,7 @@ class Match {
     var groupId: Int? = null
 
     @Column(name = "stage")
-    var stage = 1
+    var stage: MatchStage? = null
 
     @Column(name = "team_a_id")
     var teamAId = 0
@@ -39,10 +40,12 @@ class Match {
     @Column(name = "winner")
     var winner: Int? = null
 
+    @Column(name = "next_match_id")
+    var nextMatchId: Int = 0
+
     @Column(name = "status")
-    var status: MatchStatus? = null
+    var status: MatchStatus = MatchStatus.WAITING
 
     @Column(name = "end_at")
     var endAt: Date? = null
-
 }

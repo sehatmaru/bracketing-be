@@ -18,14 +18,17 @@ class Group {
     @Column(name = "tournament_id")
     var tournamentId = 0
 
-    @Column(name = "participants_id")
-    var participantsId = ""
+    @Column(name = "team_ids")
+    var teamIds = ""
 
-    @Column(name = "participants_score")
-    var participantsScore = ""
+    @Column(name = "team_score")
+    var teamScore = ""
+
+    @Column(name = "advance_participant")
+    var advanceParticipant = 0
 
     @Column(name = "status")
-    var status: GroupStatus? = null
+    var status: GroupStatus = GroupStatus.WAITING
 
     @Column(name = "start_at")
     var startAt: Date? = null
@@ -33,4 +36,7 @@ class Group {
     @Column(name = "end_at")
     var endAt: Date? = null
 
+    fun getTeamIdList(): List<String> {
+        return teamIds.substring(0, teamIds.length-1).split(";")
+    }
 }
