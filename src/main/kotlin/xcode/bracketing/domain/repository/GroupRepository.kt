@@ -6,5 +6,5 @@ import xcode.bracketing.domain.model.Group
 
 @Repository
 interface GroupRepository : JpaRepository<Group?, String?> {
-//    fun findByUsernameAndDeletedAtIsNull(username: String): User?
+
 }

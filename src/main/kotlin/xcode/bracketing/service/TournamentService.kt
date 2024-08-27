@@ -12,6 +12,10 @@ import xcode.bracketing.domain.request.tournament.GroupSettingRequest
 import xcode.bracketing.domain.request.tournament.TeamRequest
 import xcode.bracketing.domain.response.BaseResponse
 import xcode.bracketing.domain.response.tournament.CreateTournamentResponse
+import xcode.bracketing.domain.response.tournament.GroupDetailResponse
+import xcode.bracketing.domain.response.tournament.TeamGroupResponse
+import xcode.bracketing.exception.AppException
+import xcode.bracketing.shared.ResponseCode
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.floor
@@ -83,22 +87,21 @@ class TournamentService @Autowired constructor(
         var i = 0
         var k = 0
         while (i < groupNumbers) {
-            var teamIds = ""
-            var number = 0
+            val group = Group()
+            group.tournamentId = tournamentId
+            group.advanceParticipant = groupSetting.groupAdvanceParticipants
 
+            groupRepository.save(group)
+
+            var number = 0
             while (number < groupSetting.groupParticipants) {
-                if (k < participants) teamIds += "${teams[k].id};"
+                teams[k].groupId = group.id
 
                 number++
                 k++
             }
 
-            val group = Group()
-            group.tournamentId = tournamentId
-            group.advanceParticipant = groupSetting.groupAdvanceParticipants
-            group.teamIds = teamIds
-
-            groupRepository.save(group)
+            teamRepository.saveAll(teams)
 
             result.add(group)
             i++
@@ -111,16 +114,16 @@ class TournamentService @Autowired constructor(
         val result = ArrayList<Match>()
 
         group.forEach { e ->
-            val teams = e.getTeamIdList()
+            val teams = teamRepository.findTeamByGroupId(e.id)
 
-            for (i in 0 until teams.count()-1) {
+            for (i in 0 until teams!!.count()-1) {
                 for (j in i+1 until teams.count()) {
                     val match = Match()
                     match.tournamentId = tournamentId
                     match.groupId = e.id
                     match.stage = MatchStage.GROUP
-                    match.teamAId = teams[i].toInt()
-                    match.teamBId = teams[j].toInt()
+                    match.teamAId = teams[i]?.id!!
+                    match.teamBId = teams[j]?.id!!
 
                     matchRepository.save(match)
 
@@ -200,5 +203,40 @@ class TournamentService @Autowired constructor(
         }
 
         return 0
+    }
+
+    fun getGroupDetail(id: Int): BaseResponse<GroupDetailResponse> {
+        val result: BaseResponse<GroupDetailResponse> = BaseResponse()
+        val response = GroupDetailResponse()
+
+        val group = groupRepository.findById(id.toString()).orElseThrow {
+            throw AppException(ResponseCode.NOT_FOUND_MESSAGE)
+        }
+
+        response.id = group!!.id
+        response.tournamentId = group.tournamentId
+        response.status = group.status
+        response.startAt = group.startAt
+        response.endAt = group.endAt
+
+        val teams = teamRepository.findTeamByGroupId(group.id)
+
+        teams?.forEach { e ->
+            val teamResponse = TeamGroupResponse()
+            teamResponse.id = e!!.id
+            teamResponse.name = e.name
+            teamResponse.played = e.groupPlayed
+            teamResponse.wins = e.groupWins
+            teamResponse.loses = e.groupLoses
+            teamResponse.draws = e.groupDraws
+            teamResponse.score = e.groupScore
+            teamResponse.point = e.groupPoint
+
+            response.teams.add(teamResponse)
+        }
+
+        result.setSuccess(response)
+
+        return result
     }
 }

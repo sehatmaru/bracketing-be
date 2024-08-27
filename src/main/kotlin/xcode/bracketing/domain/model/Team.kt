@@ -17,6 +17,9 @@ class Team {
     @Column(name = "tournament_id")
     var tournamentId = 0
 
+    @Column(name = "group_id")
+    var groupId = 0
+
     @Column(name = "name")
     var name = ""
 
@@ -28,6 +31,24 @@ class Team {
 
     @Column(name = "is_lost")
     var isLost = false
+
+    @Column(name = "group_wins")
+    var groupWins = 0
+
+    @Column(name = "group_draws")
+    var groupDraws = 0
+
+    @Column(name = "group_loses")
+    var groupLoses = 0
+
+    @Column(name = "group_score")
+    var groupScore = 0
+
+    @Column(name = "group_played")
+    var groupPlayed = 0
+
+    @Column(name = "group_point")
+    var groupPoint = 0
 
     @Column(name = "created_at")
     var createdAt: Date? = null
