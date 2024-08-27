@@ -56,6 +56,9 @@ class Tournament {
     @Column(name = "status")
     var status: TournamentStatus = TournamentStatus.WAITING
 
+    @Column(name = "started_at")
+    var startedAt: Date? = null
+
     @Column(name = "created_at")
     var createdAt: Date? = null
 
@@ -65,4 +68,11 @@ class Tournament {
     @Column(name = "deleted_at")
     var deletedAt: Date? = null
 
+    fun isGroupStage(): Boolean {
+        return format == TournamentFormat.DOUBLE_ELIMINATION && type == TournamentType.TWO_STAGE
+    }
+
+    fun isStarted(): Boolean {
+        return status != TournamentStatus.WAITING
+    }
 }

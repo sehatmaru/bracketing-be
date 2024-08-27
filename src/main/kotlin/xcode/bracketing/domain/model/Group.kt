@@ -24,9 +24,9 @@ class Group {
     @Column(name = "status")
     var status: GroupStatus = GroupStatus.WAITING
 
-    @Column(name = "start_at")
-    var startAt: Date? = null
+    @Column(name = "started_at")
+    var startedAt: Date? = null
 
-    @Column(name = "end_at")
-    var endAt: Date? = null
+    @Column(name = "ended_at")
+    var endedAt: Date? = null
 }

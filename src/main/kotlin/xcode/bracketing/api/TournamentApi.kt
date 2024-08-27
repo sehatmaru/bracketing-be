@@ -10,6 +10,7 @@ import xcode.bracketing.domain.request.tournament.CreateTournamentRequest
 import xcode.bracketing.domain.response.BaseResponse
 import xcode.bracketing.domain.response.tournament.CreateTournamentResponse
 import xcode.bracketing.domain.response.tournament.GroupDetailResponse
+import xcode.bracketing.domain.response.tournament.TournamentDetailResponse
 import xcode.bracketing.service.TournamentService
 
 @RestController
@@ -38,4 +39,23 @@ class TournamentApi @Autowired constructor(
             .body(response)
     }
 
+    @GetMapping("/detail/{id}")
+    fun getTournamentDetail(@PathVariable("id") @Validated id: Int): ResponseEntity<BaseResponse<TournamentDetailResponse>> {
+        val response: BaseResponse<TournamentDetailResponse> = tournamentService.getTournamentDetail(id)
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(response)
+    }
+
+    @PostMapping("/start/{id}")
+    fun startTournament(@PathVariable("id") @Validated id: Int): ResponseEntity<BaseResponse<Boolean>> {
+        val response: BaseResponse<Boolean> = tournamentService.startTournament(id)
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(response)
+    }
 }

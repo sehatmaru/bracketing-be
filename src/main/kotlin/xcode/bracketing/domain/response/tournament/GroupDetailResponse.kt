@@ -8,8 +8,8 @@ class GroupDetailResponse {
     var tournamentId = 0
     var teams: MutableList<TeamGroupResponse> = mutableListOf()
     var status: GroupStatus = GroupStatus.WAITING
-    var startAt: Date? = null
-    var endAt: Date? = null
+    var startedAt: Date? = null
+    var endedAt: Date? = null
 }
 
 class TeamGroupResponse {

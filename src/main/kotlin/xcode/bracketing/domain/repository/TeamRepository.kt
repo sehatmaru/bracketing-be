@@ -6,5 +6,7 @@ import xcode.bracketing.domain.model.Team
 
 @Repository
 interface TeamRepository : JpaRepository<Team?, String?> {
-    fun findTeamByGroupId(groupId: Int): List<Team?>?
+    fun findByGroupId(groupId: Int): List<Team?>?
+
+    fun findByTournamentId(tournamentId: Int): List<Team?>?
 }

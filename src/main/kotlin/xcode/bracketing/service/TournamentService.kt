@@ -3,17 +3,14 @@ package xcode.bracketing.service
 import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import xcode.bracketing.domain.enums.MatchStage
-import xcode.bracketing.domain.enums.TournamentType
+import xcode.bracketing.domain.enums.*
 import xcode.bracketing.domain.model.*
 import xcode.bracketing.domain.repository.*
 import xcode.bracketing.domain.request.tournament.CreateTournamentRequest
 import xcode.bracketing.domain.request.tournament.GroupSettingRequest
 import xcode.bracketing.domain.request.tournament.TeamRequest
 import xcode.bracketing.domain.response.BaseResponse
-import xcode.bracketing.domain.response.tournament.CreateTournamentResponse
-import xcode.bracketing.domain.response.tournament.GroupDetailResponse
-import xcode.bracketing.domain.response.tournament.TeamGroupResponse
+import xcode.bracketing.domain.response.tournament.*
 import xcode.bracketing.exception.AppException
 import xcode.bracketing.shared.ResponseCode
 import java.util.*
@@ -114,7 +111,7 @@ class TournamentService @Autowired constructor(
         val result = ArrayList<Match>()
 
         group.forEach { e ->
-            val teams = teamRepository.findTeamByGroupId(e.id)
+            val teams = teamRepository.findByGroupId(e.id)
 
             for (i in 0 until teams!!.count()-1) {
                 for (j in i+1 until teams.count()) {
@@ -207,6 +204,14 @@ class TournamentService @Autowired constructor(
 
     fun getGroupDetail(id: Int): BaseResponse<GroupDetailResponse> {
         val result: BaseResponse<GroupDetailResponse> = BaseResponse()
+        val response = initGroupDetail(id)
+
+        result.setSuccess(response)
+
+        return result
+    }
+
+    fun initGroupDetail(id: Int): GroupDetailResponse {
         val response = GroupDetailResponse()
 
         val group = groupRepository.findById(id.toString()).orElseThrow {
@@ -216,10 +221,10 @@ class TournamentService @Autowired constructor(
         response.id = group!!.id
         response.tournamentId = group.tournamentId
         response.status = group.status
-        response.startAt = group.startAt
-        response.endAt = group.endAt
+        response.startedAt = group.startedAt
+        response.endedAt = group.endedAt
 
-        val teams = teamRepository.findTeamByGroupId(group.id)
+        val teams = teamRepository.findByGroupId(group.id)
 
         teams?.forEach { e ->
             val teamResponse = TeamGroupResponse()
@@ -235,7 +240,70 @@ class TournamentService @Autowired constructor(
             response.teams.add(teamResponse)
         }
 
+        return response
+    }
+
+    fun getTournamentDetail(id: Int): BaseResponse<TournamentDetailResponse> {
+        val result: BaseResponse<TournamentDetailResponse> = BaseResponse()
+        val response = TournamentDetailResponse()
+
+        val tournament = tournamentRepository.findById(id.toString()).orElseThrow {
+            throw AppException(ResponseCode.NOT_FOUND_MESSAGE)
+        }
+
+        BeanUtils.copyProperties(tournament!!, response)
+
+        val teams = teamRepository.findByTournamentId(tournament.id)
+
+        teams?.forEach { e ->
+            val team = TeamTournamentDetail()
+            BeanUtils.copyProperties(e!!, team)
+
+            response.teams.add(team)
+        }
+
+        if (tournament.isGroupStage()) {
+            val groups = groupRepository.findByTournamentId(tournament.id)
+
+            groups!!.forEach { e ->
+                response.groups.add(initGroupDetail(e.id))
+            }
+        }
+
         result.setSuccess(response)
+
+        return result
+    }
+
+    fun startTournament(id: Int): BaseResponse<Boolean> {
+        val tournament = tournamentRepository.findById(id.toString()).orElseThrow {
+            throw AppException(ResponseCode.NOT_FOUND_MESSAGE)
+        }
+
+        if (tournament!!.isStarted()) {
+            throw AppException("Tournament already started.")
+        }
+
+        val startDate = Date()
+
+        tournament.status = TournamentStatus.ON_PROGRESS
+        tournament.startedAt = startDate
+        tournament.updatedAt = startDate
+        tournamentRepository.save(tournament)
+
+        if (tournament.isGroupStage()) {
+            val groups = groupRepository.findByTournamentId(tournament.id)
+
+            groups!!.forEach { e ->
+                e.status = GroupStatus.ON_PROGRESS
+                e.startedAt = startDate
+            }
+
+            groupRepository.saveAll(groups)
+        }
+
+        val result = BaseResponse<Boolean>()
+        result.setSuccess(true)
 
         return result
     }
