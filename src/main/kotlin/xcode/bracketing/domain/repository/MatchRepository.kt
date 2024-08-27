@@ -6,5 +6,8 @@ import xcode.bracketing.domain.model.Match
 
 @Repository
 interface MatchRepository : JpaRepository<Match?, String?> {
-//    fun findByUsernameAndDeletedAtIsNull(username: String): User?
+
+    fun findByGroupId(groupId: Int): List<Match>?
+
+    fun findByTournamentId(tournamentId: Int): List<Match>?
 }

@@ -21,6 +21,7 @@ class CreateTournamentRequest {
 
 class TeamRequest {
     var name = ""
+    var captain = ""
 }
 
 class GroupSettingRequest {
