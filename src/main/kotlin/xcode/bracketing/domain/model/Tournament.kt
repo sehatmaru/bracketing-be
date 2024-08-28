@@ -2,6 +2,7 @@ package xcode.bracketing.domain.model
 
 import jakarta.persistence.*
 import org.hibernate.annotations.DynamicUpdate
+import xcode.bracketing.domain.enums.MatchStage
 import xcode.bracketing.domain.enums.TournamentFormat
 import xcode.bracketing.domain.enums.TournamentStatus
 import xcode.bracketing.domain.enums.TournamentType
@@ -50,8 +51,8 @@ class Tournament {
     @Column(name = "is_third_place")
     var isThirdPlace = false
 
-    @Column(name = "round_stage")
-    var roundStage = 1
+    @Column(name = "stage")
+    var stage: MatchStage = MatchStage.OTHER
 
     @Column(name = "status")
     var status: TournamentStatus = TournamentStatus.WAITING
@@ -68,7 +69,7 @@ class Tournament {
     @Column(name = "deleted_at")
     var deletedAt: Date? = null
 
-    fun isGroupStage(): Boolean {
+    fun isGroupFormat(): Boolean {
         return format == TournamentFormat.DOUBLE_ELIMINATION && type == TournamentType.TWO_STAGE
     }
 

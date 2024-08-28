@@ -1,5 +1,6 @@
 package xcode.bracketing.domain.response.tournament
 
+import xcode.bracketing.domain.enums.MatchStage
 import xcode.bracketing.domain.enums.TournamentFormat
 import xcode.bracketing.domain.enums.TournamentStatus
 import xcode.bracketing.domain.enums.TournamentType
@@ -16,7 +17,7 @@ class TournamentDetailResponse {
     var groupParticipants = 0
     var groupAdvanceParticipants = 0
     var isThirdPlace = false
-    var roundStage = 1
+    var stage: MatchStage = MatchStage.OTHER
     var status: TournamentStatus = TournamentStatus.WAITING
     var teams: MutableList<TeamTournamentDetail> = mutableListOf()
     var groups: MutableList<GroupDetailResponse> = mutableListOf()

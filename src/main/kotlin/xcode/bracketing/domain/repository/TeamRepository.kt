@@ -10,5 +10,5 @@ interface TeamRepository : JpaRepository<Team?, String?> {
 
     fun findByTournamentId(tournamentId: Int): List<Team?>?
 
-    fun findByNumber(number: Int): Team?
+    fun findByNumberAndTournamentId(number: Int, tournamentId: Int): Team?
 }

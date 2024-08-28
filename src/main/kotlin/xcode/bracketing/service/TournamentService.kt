@@ -4,6 +4,7 @@ import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import xcode.bracketing.domain.enums.GroupStatus
+import xcode.bracketing.domain.enums.MatchStage
 import xcode.bracketing.domain.enums.TournamentStatus
 import xcode.bracketing.domain.enums.TournamentType
 import xcode.bracketing.domain.model.Group
@@ -41,6 +42,7 @@ class TournamentService @Autowired constructor(
         tournament.participants = request.teams.size
         tournament.groupParticipants = request.groupSetting?.groupParticipants ?: 0
         tournament.groupAdvanceParticipants = request.groupSetting?.groupAdvanceParticipants ?: 0
+        if (tournament.isGroupFormat()) tournament.stage = MatchStage.GROUP
 
         tournamentRepository.save(tournament)
 
@@ -52,7 +54,7 @@ class TournamentService @Autowired constructor(
             matchService.generateGroupStageMatches(tournament.id, groups)
         }
 
-        matchService.generateFinalStageMatches(tournament.id, groups, teams)
+        matchService.generateFinalStageMatches(tournament, groups, teams)
 
         baseResponse.setSuccess(CreateTournamentResponse(tournament.id, tournament.name))
 
@@ -174,7 +176,7 @@ class TournamentService @Autowired constructor(
             response.teams.add(team)
         }
 
-        if (tournament.isGroupStage()) {
+        if (tournament.isGroupFormat()) {
             val groups = groupRepository.findByTournamentId(tournament.id)
 
             groups!!.forEach { e ->
@@ -203,7 +205,7 @@ class TournamentService @Autowired constructor(
         tournament.updatedAt = startDate
         tournamentRepository.save(tournament)
 
-        if (tournament.isGroupStage()) {
+        if (tournament.isGroupFormat()) {
             val groups = groupRepository.findByTournamentId(tournament.id)
 
             groups!!.forEach { e ->
@@ -237,7 +239,7 @@ class TournamentService @Autowired constructor(
         var k = 1
         finalTeams.forEach { e ->
             e!!.number = number
-            if (tournament.isGroupStage()) e.groupId = k
+            if (tournament.isGroupFormat()) e.groupId = k
 
             if (counter < tournament.groupParticipants) counter ++ else counter = 0
 

@@ -7,4 +7,5 @@ import xcode.bracketing.domain.model.Group
 @Repository
 interface GroupRepository : JpaRepository<Group?, String?> {
     fun findByTournamentId(tournamentId: Int): List<Group>?
+
 }

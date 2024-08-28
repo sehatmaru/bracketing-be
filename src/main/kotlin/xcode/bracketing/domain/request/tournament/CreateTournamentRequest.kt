@@ -12,7 +12,6 @@ class CreateTournamentRequest {
     var format: TournamentFormat? = null
     var type: TournamentType? = null
     var isThirdPlace = false
-    var roundStage = 1
     var isRandomize = false
     var teams: List<TeamRequest> = ArrayList()
     var groupSetting: GroupSettingRequest? = null

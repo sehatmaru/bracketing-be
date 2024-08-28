@@ -5,11 +5,10 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import xcode.bracketing.domain.request.match.MatchScoreRequest
 import xcode.bracketing.domain.response.BaseResponse
+import xcode.bracketing.domain.response.match.MatchPlayedResponse
 import xcode.bracketing.domain.response.match.MatchResponse
 import xcode.bracketing.service.MatchService
 
@@ -32,6 +31,19 @@ class MatchApi @Autowired constructor(
     @GetMapping("/group/{groupId}")
     fun getGroupStageMatches(@PathVariable("groupId") @Validated id: Int): ResponseEntity<BaseResponse<List<MatchResponse>>> {
         val response: BaseResponse<List<MatchResponse>> = matchService.getGroupStageMatches(id)
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(response)
+    }
+
+    @PostMapping("/play/{matchId}")
+    fun login(
+        @PathVariable("matchId") @Validated id: Int,
+        @RequestBody @Validated request: MatchScoreRequest
+    ): ResponseEntity<BaseResponse<MatchPlayedResponse>> {
+        val response: BaseResponse<MatchPlayedResponse> = matchService.playMatch(id, request)
 
         return ResponseEntity
             .status(HttpStatus.OK)

@@ -48,4 +48,8 @@ class Match {
 
     @Column(name = "end_at")
     var endAt: Date? = null
+
+    fun isStarted(): Boolean {
+        return status != MatchStatus.WAITING
+    }
 }
