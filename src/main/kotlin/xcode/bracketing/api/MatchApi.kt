@@ -19,8 +19,8 @@ class MatchApi @Autowired constructor(
     private val matchService: MatchService
 ) {
 
-    @GetMapping("/tournament/{id}")
-    fun getTournamentMatches(@PathVariable("id") @Validated id: Int): ResponseEntity<BaseResponse<List<MatchResponse>>> {
+    @GetMapping("/tournament/{tournamentId}")
+    fun getTournamentMatches(@PathVariable("tournamentId") @Validated id: Int): ResponseEntity<BaseResponse<List<MatchResponse>>> {
         val response: BaseResponse<List<MatchResponse>> = matchService.getTournamentMatches(id)
 
         return ResponseEntity
@@ -29,8 +29,8 @@ class MatchApi @Autowired constructor(
             .body(response)
     }
 
-    @GetMapping("/group/{id}")
-    fun getGroupStageMatches(@PathVariable("id") @Validated id: Int): ResponseEntity<BaseResponse<List<MatchResponse>>> {
+    @GetMapping("/group/{groupId}")
+    fun getGroupStageMatches(@PathVariable("groupId") @Validated id: Int): ResponseEntity<BaseResponse<List<MatchResponse>>> {
         val response: BaseResponse<List<MatchResponse>> = matchService.getGroupStageMatches(id)
 
         return ResponseEntity

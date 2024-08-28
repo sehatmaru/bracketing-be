@@ -29,8 +29,8 @@ class TournamentApi @Autowired constructor(
             .body(response)
     }
 
-    @GetMapping("/group/detail/{id}")
-    fun getGroupDetail(@PathVariable("id") @Validated id: Int): ResponseEntity<BaseResponse<GroupDetailResponse>> {
+    @GetMapping("/group/detail/{groupId}")
+    fun getGroupDetail(@PathVariable("groupId") @Validated id: Int): ResponseEntity<BaseResponse<GroupDetailResponse>> {
         val response: BaseResponse<GroupDetailResponse> = tournamentService.getGroupDetail(id)
 
         return ResponseEntity
@@ -39,8 +39,8 @@ class TournamentApi @Autowired constructor(
             .body(response)
     }
 
-    @GetMapping("/detail/{id}")
-    fun getTournamentDetail(@PathVariable("id") @Validated id: Int): ResponseEntity<BaseResponse<TournamentDetailResponse>> {
+    @GetMapping("/detail/{tournamentId}")
+    fun getTournamentDetail(@PathVariable("tournamentId") @Validated id: Int): ResponseEntity<BaseResponse<TournamentDetailResponse>> {
         val response: BaseResponse<TournamentDetailResponse> = tournamentService.getTournamentDetail(id)
 
         return ResponseEntity
@@ -49,9 +49,19 @@ class TournamentApi @Autowired constructor(
             .body(response)
     }
 
-    @PostMapping("/start/{id}")
-    fun startTournament(@PathVariable("id") @Validated id: Int): ResponseEntity<BaseResponse<Boolean>> {
+    @PostMapping("/start/{tournamentId}")
+    fun startTournament(@PathVariable("tournamentId") @Validated id: Int): ResponseEntity<BaseResponse<Boolean>> {
         val response: BaseResponse<Boolean> = tournamentService.startTournament(id)
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(response)
+    }
+
+    @PostMapping("/teams/randomize/{tournamentId}")
+    fun randomizeGroup(@PathVariable("tournamentId") @Validated id: Int): ResponseEntity<BaseResponse<Boolean>> {
+        val response: BaseResponse<Boolean> = tournamentService.randomizeTeam(id)
 
         return ResponseEntity
             .status(HttpStatus.OK)

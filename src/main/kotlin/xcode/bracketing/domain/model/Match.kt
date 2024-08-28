@@ -25,14 +25,14 @@ class Match {
     @Column(name = "stage")
     var stage: MatchStage? = null
 
-    @Column(name = "team_a_id")
-    var teamAId = 0
+    @Column(name = "team_a_number")
+    var teamANumber = 0
 
     @Column(name = "team_a_score")
     var teamAScore = 0
 
-    @Column(name = "team_b_id")
-    var teamBId = 0
+    @Column(name = "team_b_number")
+    var teamBNumber = 0
 
     @Column(name = "team_b_score")
     var teamBScore = 0

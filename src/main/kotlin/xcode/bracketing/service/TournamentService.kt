@@ -10,6 +10,7 @@ import xcode.bracketing.domain.model.Group
 import xcode.bracketing.domain.model.Team
 import xcode.bracketing.domain.model.Tournament
 import xcode.bracketing.domain.repository.GroupRepository
+import xcode.bracketing.domain.repository.MatchRepository
 import xcode.bracketing.domain.repository.TeamRepository
 import xcode.bracketing.domain.repository.TournamentRepository
 import xcode.bracketing.domain.request.tournament.CreateTournamentRequest
@@ -20,13 +21,15 @@ import xcode.bracketing.domain.response.tournament.*
 import xcode.bracketing.exception.AppException
 import xcode.bracketing.shared.ResponseCode
 import java.util.*
+import kotlin.collections.ArrayList
 
 @Service
 class TournamentService @Autowired constructor(
     private val matchService: MatchService,
     private val tournamentRepository: TournamentRepository,
     private val groupRepository: GroupRepository,
-    private val teamRepository: TeamRepository
+    private val teamRepository: TeamRepository,
+    private val matchRepository: MatchRepository
 ) {
 
     fun createTournament(request: CreateTournamentRequest): BaseResponse<CreateTournamentResponse> {
@@ -36,14 +39,16 @@ class TournamentService @Autowired constructor(
         BeanUtils.copyProperties(request, tournament)
         tournament.createdAt = Date()
         tournament.participants = request.teams.size
+        tournament.groupParticipants = request.groupSetting?.groupParticipants ?: 0
+        tournament.groupAdvanceParticipants = request.groupSetting?.groupAdvanceParticipants ?: 0
 
         tournamentRepository.save(tournament)
 
-        val teams = generateTeams(tournament.id, request.teams)
+        val teams = generateTeams(tournament.id, request.isRandomize, request.teams)
         var groups: List<Group> = ArrayList()
 
         if (request.type == TournamentType.TWO_STAGE) {
-            groups = generateGroups(tournament.id, request.isRandomize, request.groupSetting!!,  teams)
+            groups = generateGroups(tournament.id, request.groupSetting!!,  teams)
             matchService.generateGroupStageMatches(tournament.id, groups)
         }
 
@@ -54,11 +59,12 @@ class TournamentService @Autowired constructor(
         return baseResponse
     }
 
-    fun generateTeams(tournamentId: Int, teams: List<TeamRequest>): List<Team> {
+    fun generateTeams(tournamentId: Int, isRandomize: Boolean, teams: List<TeamRequest>): List<Team> {
+        val finalTeams = if (isRandomize) teams.shuffled() else teams
         val result = ArrayList<Team>()
         var number = 1
 
-        teams.forEach { e ->
+        finalTeams.forEach { e ->
             val team = Team()
             team.tournamentId = tournamentId
             team.name = e.name
@@ -75,14 +81,12 @@ class TournamentService @Autowired constructor(
         return result
     }
 
-    fun generateGroups(tournamentId: Int, isRandomize: Boolean, groupSetting: GroupSettingRequest, teams: List<Team>): List<Group> {
+    fun generateGroups(tournamentId: Int, groupSetting: GroupSettingRequest, teams: List<Team>): List<Group> {
         val result = ArrayList<Group>()
 
         val participants = teams.size
         var groupNumbers = participants/groupSetting.groupParticipants
         if (participants%groupNumbers != 0) groupNumbers++
-
-        if (isRandomize) teams.shuffled()
 
         var i = 0
         var k = 0
@@ -110,19 +114,19 @@ class TournamentService @Autowired constructor(
         return result
     }
 
-    fun getGroupDetail(id: Int): BaseResponse<GroupDetailResponse> {
+    fun getGroupDetail(groupId: Int): BaseResponse<GroupDetailResponse> {
         val result: BaseResponse<GroupDetailResponse> = BaseResponse()
-        val response = initGroupDetail(id)
+        val response = initGroupDetail(groupId)
 
         result.setSuccess(response)
 
         return result
     }
 
-    fun initGroupDetail(id: Int): GroupDetailResponse {
+    fun initGroupDetail(groupId: Int): GroupDetailResponse {
         val response = GroupDetailResponse()
 
-        val group = groupRepository.findById(id.toString()).orElseThrow {
+        val group = groupRepository.findById(groupId.toString()).orElseThrow {
             throw AppException(ResponseCode.NOT_FOUND_MESSAGE)
         }
 
@@ -151,11 +155,11 @@ class TournamentService @Autowired constructor(
         return response
     }
 
-    fun getTournamentDetail(id: Int): BaseResponse<TournamentDetailResponse> {
+    fun getTournamentDetail(tournamentId: Int): BaseResponse<TournamentDetailResponse> {
         val result: BaseResponse<TournamentDetailResponse> = BaseResponse()
         val response = TournamentDetailResponse()
 
-        val tournament = tournamentRepository.findById(id.toString()).orElseThrow {
+        val tournament = tournamentRepository.findById(tournamentId.toString()).orElseThrow {
             throw AppException(ResponseCode.NOT_FOUND_MESSAGE)
         }
 
@@ -183,8 +187,8 @@ class TournamentService @Autowired constructor(
         return result
     }
 
-    fun startTournament(id: Int): BaseResponse<Boolean> {
-        val tournament = tournamentRepository.findById(id.toString()).orElseThrow {
+    fun startTournament(tournamentId: Int): BaseResponse<Boolean> {
+        val tournament = tournamentRepository.findById(tournamentId.toString()).orElseThrow {
             throw AppException(ResponseCode.NOT_FOUND_MESSAGE)
         }
 
@@ -215,4 +219,37 @@ class TournamentService @Autowired constructor(
 
         return result
     }
+
+    fun randomizeTeam(tournamentId: Int): BaseResponse<Boolean> {
+        val result: BaseResponse<Boolean> = BaseResponse()
+
+        val tournament = tournamentRepository.findById(tournamentId.toString()).orElseThrow {
+            throw AppException(ResponseCode.NOT_FOUND_MESSAGE)
+        }
+
+        if (tournament!!.isStarted()) throw AppException("Tournament already started.")
+
+        val teams = teamRepository.findByTournamentId(tournamentId)
+        val finalTeams = teams!!.shuffled()
+
+        var number = 1
+        var counter = 0
+        var k = 1
+        finalTeams.forEach { e ->
+            e!!.number = number
+            if (tournament.isGroupStage()) e.groupId = k
+
+            if (counter < tournament.groupParticipants) counter ++ else counter = 0
+
+            number++
+            k++
+        }
+
+        teamRepository.saveAll(finalTeams)
+
+        result.setSuccess(true)
+
+        return result
+    }
+
 }

@@ -39,8 +39,8 @@ class MatchService @Autowired constructor(
                     match.tournamentId = tournamentId
                     match.groupId = e.id
                     match.stage = MatchStage.GROUP
-                    match.teamAId = teams[i]?.id!!
-                    match.teamBId = teams[j]?.id!!
+                    match.teamANumber = teams[i]?.number!!
+                    match.teamBNumber = teams[j]?.number!!
 
                     matchRepository.save(match)
 
