@@ -135,10 +135,16 @@ class MatchService @Autowired constructor(
         matches!!.forEach { e ->
             val match = MatchResponse()
             BeanUtils.copyProperties(e, match)
-            val teamA = teamRepository.findByNumber(e.teamANumber)
-            val teamB = teamRepository.findByNumber(e.teamBNumber)
-            match.teamA = TeamMatchResponse(teamA!!.id, teamA.name, teamA.number)
-            match.teamB = TeamMatchResponse(teamB!!.id, teamB.name, teamB.number)
+
+            if (e.teamANumber != 0) {
+                val teamA = teamRepository.findByNumber(e.teamANumber)
+                match.teamA = TeamMatchResponse(teamA!!.id, teamA.name, teamA.number)
+            }
+
+            if (e.teamBNumber != 0) {
+                val teamB = teamRepository.findByNumber(e.teamBNumber)
+                match.teamB = TeamMatchResponse(teamB!!.id, teamB.name, teamB.number)
+            }
 
             response.add(match)
         }
@@ -160,6 +166,16 @@ class MatchService @Autowired constructor(
         matches!!.forEach { e ->
             val match = MatchResponse()
             BeanUtils.copyProperties(e, match)
+
+            if (e.teamANumber != 0) {
+                val teamA = teamRepository.findByNumber(e.teamANumber)
+                match.teamA = TeamMatchResponse(teamA!!.id, teamA.name, teamA.number)
+            }
+
+            if (e.teamBNumber != 0) {
+                val teamB = teamRepository.findByNumber(e.teamBNumber)
+                match.teamB = TeamMatchResponse(teamB!!.id, teamB.name, teamB.number)
+            }
 
             response.add(match)
         }
