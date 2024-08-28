@@ -13,6 +13,7 @@ import xcode.bracketing.domain.repository.TeamRepository
 import xcode.bracketing.domain.repository.TournamentRepository
 import xcode.bracketing.domain.response.BaseResponse
 import xcode.bracketing.domain.response.match.MatchResponse
+import xcode.bracketing.domain.response.match.TeamMatchResponse
 import xcode.bracketing.exception.AppException
 import xcode.bracketing.shared.ResponseCode
 import kotlin.math.floor
@@ -134,6 +135,10 @@ class MatchService @Autowired constructor(
         matches!!.forEach { e ->
             val match = MatchResponse()
             BeanUtils.copyProperties(e, match)
+            val teamA = teamRepository.findByNumber(e.teamANumber)
+            val teamB = teamRepository.findByNumber(e.teamBNumber)
+            match.teamA = TeamMatchResponse(teamA!!.id, teamA.name, teamA.number)
+            match.teamB = TeamMatchResponse(teamB!!.id, teamB.name, teamB.number)
 
             response.add(match)
         }

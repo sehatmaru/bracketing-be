@@ -7,11 +7,11 @@ import java.util.*
 class MatchResponse {
     var id = 0
     var stage: MatchStage? = null
-    var teamAId = 0
-    var teamAScore = 0
-    var teamBId = 0
-    var teamBScore = 0
+    var teamA: TeamMatchResponse? = null
+    var teamB: TeamMatchResponse? = null
     var winner: Int? = null
     var status: MatchStatus = MatchStatus.WAITING
     var endAt: Date? = null
 }
+
+class TeamMatchResponse(var id: Int, var name: String, var number: Number)
