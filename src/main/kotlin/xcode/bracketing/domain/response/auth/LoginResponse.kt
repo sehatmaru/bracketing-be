@@ -4,6 +4,5 @@ class LoginResponse {
     var id: Int? = null
     var fullName = ""
     var username = ""
-    var email = ""
     var accessToken = ""
 }

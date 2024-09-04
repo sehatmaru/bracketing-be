@@ -48,7 +48,6 @@ class AuthService @Autowired constructor(
         response.id = user.id
         response.username = user.username
         response.fullName = user.fullName
-        response.email = user.email
         response.accessToken = token
 
         baseResponse.setSuccess(response)

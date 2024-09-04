@@ -1,5 +1,6 @@
 package xcode.bracketing.domain.response.match
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import xcode.bracketing.domain.enums.MatchStage
 import xcode.bracketing.domain.enums.MatchStatus
 import java.util.*
@@ -11,6 +12,8 @@ class MatchResponse {
     var teamB: TeamMatchResponse? = null
     var winner: Int? = null
     var status: MatchStatus = MatchStatus.WAITING
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "UTC")
     var endAt: Date? = null
 }
 

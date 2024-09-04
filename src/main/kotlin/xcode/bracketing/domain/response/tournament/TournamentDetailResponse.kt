@@ -1,5 +1,6 @@
 package xcode.bracketing.domain.response.tournament
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import xcode.bracketing.domain.enums.MatchStage
 import xcode.bracketing.domain.enums.TournamentFormat
 import xcode.bracketing.domain.enums.TournamentStatus
@@ -21,8 +22,14 @@ class TournamentDetailResponse {
     var status: TournamentStatus = TournamentStatus.WAITING
     var teams: MutableList<TeamTournamentDetail> = mutableListOf()
     var groups: MutableList<GroupDetailResponse> = mutableListOf()
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "UTC")
     var createdAt: Date? = null
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "UTC")
     var startedAt: Date? = null
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "UTC")
     var endAt: Date? = null
 }
 

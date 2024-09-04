@@ -11,10 +11,11 @@ import xcode.bracketing.domain.response.BaseResponse
 import xcode.bracketing.domain.response.tournament.CreateTournamentResponse
 import xcode.bracketing.domain.response.tournament.GroupDetailResponse
 import xcode.bracketing.domain.response.tournament.TournamentDetailResponse
+import xcode.bracketing.domain.response.tournament.TournamentListResponse
 import xcode.bracketing.service.TournamentService
 
 @RestController
-@RequestMapping(value = ["tournament"])
+@RequestMapping(value = ["api/tournament"])
 class TournamentApi @Autowired constructor(
     private val tournamentService: TournamentService
 ) {
@@ -22,6 +23,16 @@ class TournamentApi @Autowired constructor(
     @PostMapping("/create")
     fun login(@RequestBody @Validated request: CreateTournamentRequest): ResponseEntity<BaseResponse<CreateTournamentResponse>> {
         val response: BaseResponse<CreateTournamentResponse> = tournamentService.createTournament(request)
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(response)
+    }
+
+    @GetMapping("/list")
+    fun getTournamentList(): ResponseEntity<BaseResponse<List<TournamentListResponse>>> {
+        val response: BaseResponse<List<TournamentListResponse>> = tournamentService.getTournamentList()
 
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -60,7 +71,7 @@ class TournamentApi @Autowired constructor(
     }
 
     @PostMapping("/teams/randomize/{tournamentId}")
-    fun randomizeGroup(@PathVariable("tournamentId") @Validated id: Int): ResponseEntity<BaseResponse<Boolean>> {
+    fun randomizeTournament(@PathVariable("tournamentId") @Validated id: Int): ResponseEntity<BaseResponse<Boolean>> {
         val response: BaseResponse<Boolean> = tournamentService.randomizeTeam(id)
 
         return ResponseEntity

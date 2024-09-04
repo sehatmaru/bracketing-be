@@ -7,11 +7,11 @@ import xcode.bracketing.domain.enums.GroupStatus
 import xcode.bracketing.domain.enums.MatchStage
 import xcode.bracketing.domain.enums.TournamentStatus
 import xcode.bracketing.domain.enums.TournamentType
+import xcode.bracketing.domain.model.CurrentAuth
 import xcode.bracketing.domain.model.Group
 import xcode.bracketing.domain.model.Team
 import xcode.bracketing.domain.model.Tournament
 import xcode.bracketing.domain.repository.GroupRepository
-import xcode.bracketing.domain.repository.MatchRepository
 import xcode.bracketing.domain.repository.TeamRepository
 import xcode.bracketing.domain.repository.TournamentRepository
 import xcode.bracketing.domain.request.tournament.CreateTournamentRequest
@@ -29,8 +29,7 @@ class TournamentService @Autowired constructor(
     private val matchService: MatchService,
     private val tournamentRepository: TournamentRepository,
     private val groupRepository: GroupRepository,
-    private val teamRepository: TeamRepository,
-    private val matchRepository: MatchRepository
+    private val teamRepository: TeamRepository
 ) {
 
     fun createTournament(request: CreateTournamentRequest): BaseResponse<CreateTournamentResponse> {
@@ -39,6 +38,7 @@ class TournamentService @Autowired constructor(
         val tournament = Tournament()
         BeanUtils.copyProperties(request, tournament)
         tournament.createdAt = Date()
+        tournament.createdBy = CurrentAuth.get().userId
         tournament.participants = request.teams.size
         tournament.groupParticipants = request.groupSetting?.groupParticipants ?: 0
         tournament.groupAdvanceParticipants = request.groupSetting?.groupAdvanceParticipants ?: 0
@@ -155,6 +155,23 @@ class TournamentService @Autowired constructor(
         }
 
         return response
+    }
+
+    fun getTournamentList(): BaseResponse<List<TournamentListResponse>> {
+        val result: BaseResponse<List<TournamentListResponse>> = BaseResponse()
+        val response = mutableListOf<TournamentListResponse>()
+
+        val tournamentList = tournamentRepository.findByCreatedBy(CurrentAuth.get().userId)
+
+        tournamentList!!.map { e ->
+            response.add(TournamentListResponse().apply {
+                BeanUtils.copyProperties(e, this)
+            })
+        }
+
+        result.setSuccess(response)
+
+        return result
     }
 
     fun getTournamentDetail(tournamentId: Int): BaseResponse<TournamentDetailResponse> {

@@ -13,7 +13,7 @@ import xcode.bracketing.domain.response.match.MatchResponse
 import xcode.bracketing.service.MatchService
 
 @RestController
-@RequestMapping(value = ["match"])
+@RequestMapping(value = ["api/match"])
 class MatchApi @Autowired constructor(
     private val matchService: MatchService
 ) {

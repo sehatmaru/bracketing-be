@@ -351,11 +351,15 @@ class MatchService @Autowired constructor(
         response.winner = if (teamARequest.isWinner) TeamMatchPlayedResponse(teamA.id, teamA.name, teamA.number) else TeamMatchPlayedResponse(teamB.id, teamB.name, teamB.number)
 
         if (teamARequest.isWinner) {
+            teamB.isLost = true
+
             if (match.stage != MatchStage.FINAL) {
                 if (match.id < sameBracketMatchId) nextMatch.get().teamANumber = teamA.number
                 else nextMatch.get().teamBNumber = teamA.number
             }
         } else if (teamBRequest.isWinner) {
+            teamA.isLost = true
+
             if (match.stage != MatchStage.FINAL) {
                 if (match.id < sameBracketMatchId) nextMatch.get().teamANumber = teamB.number
                 else nextMatch.get().teamBNumber = teamB.number
