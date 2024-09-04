@@ -26,15 +26,16 @@ class WebFilter : GenericFilterBean() {
 
                 if ("OPTIONS" == request.method) {
                     response.status = HttpServletResponse.SC_OK
-                    return
+                    filterChain.doFilter(request, response)
                 } else {
                     if (!authHeader.startsWith("Bearer ")) {
                         throw ServletException()
+                    } else {
+                        val token = authHeader.substring(7)
+
+                        Jwts.parser().setSigningKey("xcode").parseClaimsJws(token).body
                     }
                 }
-                val token = authHeader.substring(7)
-
-                Jwts.parser().setSigningKey("xcode").parseClaimsJws(token).body
             }
 
             filterChain.doFilter(request, response)
