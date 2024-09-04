@@ -18,7 +18,7 @@ class UserInterceptor @Autowired constructor(
 ) : HandlerInterceptor {
 
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
-        val token = request.getHeader("Authorization")
+        val token = request.getHeader("Authorization") ?: request.getHeader("authorization")
 
         if (token != null) {
             val tokenModel = tokenRepository.findByToken(token.substring(7))
