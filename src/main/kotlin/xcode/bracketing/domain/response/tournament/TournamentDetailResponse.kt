@@ -9,6 +9,7 @@ import java.util.*
 
 class TournamentDetailResponse {
     var id: Int? = null
+    var name = ""
     var host = ""
     var description = ""
     var url = ""

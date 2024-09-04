@@ -15,6 +15,9 @@ class Group {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     var id = 0
 
+    @Column(name = "name")
+    var name = ""
+
     @Column(name = "tournament_id")
     var tournamentId = 0
 

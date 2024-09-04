@@ -92,8 +92,10 @@ class TournamentService @Autowired constructor(
 
         var i = 0
         var k = 0
+        val name = 'A'.code
         while (i < groupNumbers) {
             val group = Group()
+            group.name = "Group " + (name + i).toChar().toString()
             group.tournamentId = tournamentId
             group.advanceParticipant = groupSetting.groupAdvanceParticipants
 
