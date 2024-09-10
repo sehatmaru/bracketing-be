@@ -6,6 +6,7 @@ import java.util.*
 
 class GroupDetailResponse {
     var id: Int? = null
+    var name = ""
     var tournamentId = 0
     var teams: MutableList<TeamGroupResponse> = mutableListOf()
     var status: GroupStatus = GroupStatus.WAITING
@@ -20,6 +21,7 @@ class GroupDetailResponse {
 class TeamGroupResponse {
     var id: Int? = null
     var name: String = ""
+    var number: Int = 0
     var score: Int = 0
     var played: Int = 0
     var wins: Int = 0

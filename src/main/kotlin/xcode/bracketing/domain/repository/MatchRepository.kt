@@ -18,4 +18,8 @@ interface MatchRepository : JpaRepository<Match?, String?> {
     fun findByStageAndTournamentIdAndStatus(stage: MatchStage, tournamentId: Int, status: MatchStatus): List<Match>?
 
     fun findByGroupIdAndStatus(groupId: Int, status: MatchStatus): List<Match>?
+
+    fun findByTournamentIdAndStage(tournamentId: Int, stage: MatchStage): List<Match>?
+
+    fun findByTournamentIdAndStageIsNot(tournamentId: Int, stage: MatchStage): List<Match>?
 }

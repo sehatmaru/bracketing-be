@@ -74,12 +74,12 @@ class MatchService @Autowired constructor(
             match.tournamentId = tournament.id
 
             when (counter) {
-                1 -> if (groups.isEmpty()) match.stage = MatchStage.FINAL
+                1 -> match.stage = MatchStage.FINAL
                 in 2..3 -> {
-                    if (groups.isEmpty()) match.stage = MatchStage.SEMI_FINAL
+                    match.stage = MatchStage.SEMI_FINAL
                     match.nextMatchId = getNextMatch(MatchStage.SEMI_FINAL, MatchStage.FINAL)
 
-                    if (totalMatches == 3) {
+                    if (totalMatches == 3 && groups.isEmpty()) {
                         match.teamANumber = teams[teamCounter].number
                         match.teamBNumber = teams[teamCounter+1].number
 
@@ -87,10 +87,10 @@ class MatchService @Autowired constructor(
                     }
                 }
                 in 4..7 -> {
-                    if (groups.isEmpty()) match.stage = MatchStage.QUARTER_FINAL
+                    match.stage = MatchStage.QUARTER_FINAL
                     match.nextMatchId = getNextMatch(MatchStage.QUARTER_FINAL, MatchStage.SEMI_FINAL)
 
-                    if (totalMatches == 7) {
+                    if (totalMatches == 7 && groups.isEmpty()) {
                         match.teamANumber = teams[teamCounter].number
                         match.teamBNumber = teams[teamCounter+1].number
 
@@ -98,10 +98,10 @@ class MatchService @Autowired constructor(
                     }
                 }
                 in 8..15 -> {
-                    if (groups.isEmpty()) match.stage = MatchStage.TOP_8
+                    match.stage = MatchStage.TOP_8
                     match.nextMatchId = getNextMatch(MatchStage.TOP_8, MatchStage.QUARTER_FINAL)
 
-                    if (totalMatches == 15) {
+                    if (totalMatches == 15 && groups.isEmpty()) {
                         match.teamANumber = teams[teamCounter].number
                         match.teamBNumber = teams[teamCounter+1].number
 
@@ -109,10 +109,10 @@ class MatchService @Autowired constructor(
                     }
                 }
                 in 16..31 -> {
-                    if (groups.isEmpty()) match.stage = MatchStage.TOP_16
+                    match.stage = MatchStage.TOP_16
                     match.nextMatchId = getNextMatch(MatchStage.TOP_16, MatchStage.TOP_8)
 
-                    if (totalMatches == 31) {
+                    if (totalMatches == 31 && groups.isEmpty()) {
                         match.teamANumber = teams[teamCounter].number
                         match.teamBNumber = teams[teamCounter+1].number
 
@@ -120,10 +120,10 @@ class MatchService @Autowired constructor(
                     }
                 }
                 in 32..63 -> {
-                    if (groups.isEmpty()) match.stage = MatchStage.TOP_32
+                    match.stage = MatchStage.TOP_32
                     match.nextMatchId = getNextMatch(MatchStage.TOP_32, MatchStage.TOP_16)
 
-                    if (totalMatches == 63) {
+                    if (totalMatches == 63 && groups.isEmpty()) {
                         match.teamANumber = teams[teamCounter].number
                         match.teamBNumber = teams[teamCounter+1].number
 
@@ -131,10 +131,10 @@ class MatchService @Autowired constructor(
                     }
                 }
                 in 64..127 -> {
-                    if (groups.isEmpty()) match.stage = MatchStage.TOP_64
+                    match.stage = MatchStage.TOP_64
                     match.nextMatchId = getNextMatch(MatchStage.TOP_64, MatchStage.TOP_32)
 
-                    if (totalMatches == 127) {
+                    if (totalMatches == 127 && groups.isEmpty()) {
                         match.teamANumber = teams[teamCounter].number
                         match.teamBNumber = teams[teamCounter+1].number
 
@@ -142,10 +142,10 @@ class MatchService @Autowired constructor(
                     }
                 }
                 in 128..255 -> {
-                    if (groups.isEmpty()) match.stage = MatchStage.TOP_128
+                    match.stage = MatchStage.TOP_128
                     match.nextMatchId = getNextMatch(MatchStage.TOP_128, MatchStage.TOP_64)
 
-                    if (totalMatches == 255) {
+                    if (totalMatches == 255 && groups.isEmpty()) {
                         match.teamANumber = teams[teamCounter].number
                         match.teamBNumber = teams[teamCounter+1].number
 
@@ -153,7 +153,7 @@ class MatchService @Autowired constructor(
                     }
                 }
                 else -> {
-                    if (groups.isEmpty()) match.stage = MatchStage.OTHER
+                    match.stage = MatchStage.OTHER
                     match.nextMatchId = getNextMatch(MatchStage.OTHER, MatchStage.TOP_128)
                     match.teamANumber = teams[teamCounter].number
                     match.teamBNumber = teams[teamCounter+1].number
@@ -215,12 +215,12 @@ class MatchService @Autowired constructor(
 
             if (e.teamANumber != 0) {
                 val teamA = teamRepository.findByNumberAndTournamentId(e.teamANumber, e.tournamentId)
-                match.teamA = TeamMatchResponse(teamA!!.id, teamA.name, teamA.number)
+                match.teamA = TeamMatchResponse(teamA!!.id, teamA.name, teamA.number, e.teamAScore, e.winner == teamA.number)
             }
 
             if (e.teamBNumber != 0) {
                 val teamB = teamRepository.findByNumberAndTournamentId(e.teamBNumber, e.tournamentId)
-                match.teamB = TeamMatchResponse(teamB!!.id, teamB.name, teamB.number)
+                match.teamB = TeamMatchResponse(teamB!!.id, teamB.name, teamB.number, e.teamBScore, e.winner == teamB.number)
             }
 
             response.add(match)
@@ -231,7 +231,7 @@ class MatchService @Autowired constructor(
         return result
     }
 
-    fun getTournamentMatches(tournamentId: Int): BaseResponse<List<MatchResponse>> {
+    fun getTournamentMatches(tournamentId: Int, isGroupStage: Boolean): BaseResponse<List<MatchResponse>> {
         val result = BaseResponse<List<MatchResponse>>()
         val response = mutableListOf<MatchResponse>()
 
@@ -239,19 +239,20 @@ class MatchService @Autowired constructor(
             throw AppException(ResponseCode.NOT_FOUND_MESSAGE)
         }
 
-        val matches = matchRepository.findByTournamentId(tournamentId)
+        val matches = if (isGroupStage) matchRepository.findByTournamentIdAndStage(tournamentId, MatchStage.GROUP)
+        else matchRepository.findByTournamentIdAndStageIsNot(tournamentId, MatchStage.GROUP)
         matches!!.forEach { e ->
             val match = MatchResponse()
             BeanUtils.copyProperties(e, match)
 
             if (e.teamANumber != 0) {
                 val teamA = teamRepository.findByNumberAndTournamentId(e.teamANumber, e.tournamentId)
-                match.teamA = TeamMatchResponse(teamA!!.id, teamA.name, teamA.number)
+                match.teamA = TeamMatchResponse(teamA!!.id, teamA.name, teamA.number, e.teamAScore, e.winner == teamA.number)
             }
 
             if (e.teamBNumber != 0) {
                 val teamB = teamRepository.findByNumberAndTournamentId(e.teamBNumber, e.tournamentId)
-                match.teamB = TeamMatchResponse(teamB!!.id, teamB.name, teamB.number)
+                match.teamB = TeamMatchResponse(teamB!!.id, teamB.name, teamB.number, e.teamBScore, e.winner == teamB.number)
             }
 
             response.add(match)
@@ -383,7 +384,7 @@ class MatchService @Autowired constructor(
         val currentStage = tournament!!.stage
         val matchRemaining = matchRepository.findByStageAndTournamentIdAndStatus(currentStage, tournamentId, MatchStatus.WAITING)
 
-        if (matchRemaining == null) {
+        if (matchRemaining!!.isEmpty()) {
             when (currentStage) {
                 MatchStage.GROUP -> {
                     val totalGroup = groupRepository.findByTournamentId(tournamentId)?.size ?: 0

@@ -19,8 +19,11 @@ class MatchApi @Autowired constructor(
 ) {
 
     @GetMapping("/tournament/{tournamentId}")
-    fun getTournamentMatches(@PathVariable("tournamentId") @Validated id: Int): ResponseEntity<BaseResponse<List<MatchResponse>>> {
-        val response: BaseResponse<List<MatchResponse>> = matchService.getTournamentMatches(id)
+    fun getTournamentMatches(
+        @PathVariable("tournamentId") @Validated id: Int,
+        @RequestParam(required = true) @Validated isGroupStage: Boolean
+    ): ResponseEntity<BaseResponse<List<MatchResponse>>> {
+        val response: BaseResponse<List<MatchResponse>> = matchService.getTournamentMatches(id, isGroupStage)
 
         return ResponseEntity
             .status(HttpStatus.OK)

@@ -134,13 +134,9 @@ class TournamentService @Autowired constructor(
             throw AppException(ResponseCode.NOT_FOUND_MESSAGE)
         }
 
-        response.id = group!!.id
-        response.tournamentId = group.tournamentId
-        response.status = group.status
-        response.startedAt = group.startedAt
-        response.endedAt = group.endedAt
+        BeanUtils.copyProperties(group!!, response)
 
-        val teams = teamRepository.findByGroupId(group.id)
+        val teams = teamRepository.findByGroupIdOrderByGroupPointDesc(group.id)
 
         teams?.forEach { e ->
             val teamResponse = TeamGroupResponse()
@@ -152,6 +148,7 @@ class TournamentService @Autowired constructor(
             teamResponse.draws = e.groupDraws
             teamResponse.score = e.groupScore
             teamResponse.point = e.groupPoint
+            teamResponse.number = e.number
 
             response.teams.add(teamResponse)
         }
@@ -250,20 +247,29 @@ class TournamentService @Autowired constructor(
 
         if (tournament!!.isStarted()) throw AppException("Tournament already started.")
 
-        val teams = teamRepository.findByTournamentId(tournamentId)
-        val finalTeams = teams!!.shuffled()
+        val teams = teamRepository.findByTournamentIdOrderByGroupId(tournamentId)
+        var groupId = teams!![0]?.groupId
+
+        val finalTeams = teams.shuffled()
 
         var number = 1
         var counter = 0
-        var k = 1
+        var groupCounter = 0
         finalTeams.forEach { e ->
             e!!.number = number
-            if (tournament.isGroupFormat()) e.groupId = k
+            if (tournament.isGroupFormat()) {
+                e.groupId = groupId!!
+                groupCounter++
+
+                if (groupCounter == tournament.groupParticipants) {
+                    groupCounter = 0
+                    groupId++
+                }
+            }
 
             if (counter < tournament.groupParticipants) counter ++ else counter = 0
 
             number++
-            k++
         }
 
         teamRepository.saveAll(finalTeams)

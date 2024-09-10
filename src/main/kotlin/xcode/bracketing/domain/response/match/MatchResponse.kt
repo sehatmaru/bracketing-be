@@ -17,4 +17,4 @@ class MatchResponse {
     var endAt: Date? = null
 }
 
-class TeamMatchResponse(var id: Int, var name: String, var number: Number)
+class TeamMatchResponse(var id: Int, var name: String, var number: Number, var score: Number, var isWinner: Boolean)
