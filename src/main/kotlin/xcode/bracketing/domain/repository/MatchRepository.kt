@@ -22,4 +22,11 @@ interface MatchRepository : JpaRepository<Match?, String?> {
     fun findByTournamentIdAndStage(tournamentId: Int, stage: MatchStage): List<Match>?
 
     fun findByTournamentIdAndStageIsNot(tournamentId: Int, stage: MatchStage): List<Match>?
+
+    fun findByTournamentIdAndStageIsNotOrderByStageDesc(tournamentId: Int, stage: MatchStage): List<Match>?
+
+    fun findFirstByTournamentIdOrderByNumberDesc(tournamentId: Int): Match
+
+    fun findByTournamentIdAndStageOrderByNumber(tournamentId: Int, stage: MatchStage): List<Match>?
+
 }

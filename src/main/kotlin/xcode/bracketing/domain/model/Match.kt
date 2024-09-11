@@ -16,6 +16,9 @@ class Match {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     var id = 0
 
+    @Column(name = "number")
+    var number: Int? = null
+
     @Column(name = "tournament_id")
     var tournamentId = 0
 

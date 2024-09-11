@@ -39,6 +39,7 @@ class MatchService @Autowired constructor(
     fun generateGroupStageMatches(tournamentId: Int, group: List<Group>): List<Match> {
         val result = ArrayList<Match>()
 
+        var number = 1
         group.forEach { e ->
             val teams = teamRepository.findByGroupId(e.id)
 
@@ -50,10 +51,12 @@ class MatchService @Autowired constructor(
                     match.stage = MatchStage.GROUP
                     match.teamANumber = teams[i]?.number!!
                     match.teamBNumber = teams[j]?.number!!
+                    match.number = number
 
                     matchRepository.save(match)
-
                     result.add(match)
+
+                    number++
                 }
             }
         }
@@ -69,9 +72,13 @@ class MatchService @Autowired constructor(
 
         var counter = 1
         var teamCounter = 0
+        var number = if (groups.isEmpty()) 1
+        else matchRepository.findFirstByTournamentIdOrderByNumberDesc(tournament.id).number?.plus(1)
+
         for (i in 0 until  totalMatches) {
             val match = Match()
             match.tournamentId = tournament.id
+            match.number = number
 
             when (counter) {
                 1 -> match.stage = MatchStage.FINAL
@@ -166,6 +173,7 @@ class MatchService @Autowired constructor(
             matches.add(match)
 
             counter++
+            number = number!! + 1
         }
 
         if (groups.isEmpty()) {
@@ -338,6 +346,8 @@ class MatchService @Autowired constructor(
             group.endedAt = Date()
 
             groupRepository.save(group)
+
+            fillFinalStageBracket(group)
         }
     }
 
@@ -415,5 +425,44 @@ class MatchService @Autowired constructor(
         }
 
         tournamentRepository.save(tournament)
+    }
+
+    fun fillFinalStageBracket(group: Group) {
+        val teams = teamRepository.findByGroupIdOrderByGroupPointDesc(group.id)
+        var matches = matchRepository.findByTournamentIdAndStageIsNotOrderByStageDesc(group.tournamentId, MatchStage.GROUP)
+        val currentStage = matches!!.first().stage
+        matches = matchRepository.findByTournamentIdAndStageOrderByNumber(group.tournamentId, currentStage!!)
+
+        var j = 0
+        var isFirstTeam = true
+        for (i in 0 until group.advanceParticipant) {
+            val team = teams!![i]
+
+            while (j < matches!!.size) {
+                val match = matches[j]
+                var isAdded = false
+
+                if (isFirstTeam && match.teamANumber == 0) {
+                    match.teamANumber = team!!.number
+                    if (j == matches.size-1) j = 0
+                    else j++
+
+                    isAdded = true
+                    isFirstTeam = false
+                }
+
+                if (!isAdded && !isFirstTeam && match.teamBNumber == 0) {
+                    match.teamBNumber = team!!.number
+                    j += 1
+
+                    isAdded = true
+                }
+
+                if (isAdded) break
+                j++
+            }
+        }
+
+        matchRepository.saveAll(matches!!)
     }
 }

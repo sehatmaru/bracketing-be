@@ -1,7 +1,6 @@
 package xcode.bracketing.domain.request.tournament
 
 import xcode.bracketing.domain.enums.TournamentFormat
-import xcode.bracketing.domain.enums.TournamentType
 
 class CreateTournamentRequest {
 
@@ -10,8 +9,7 @@ class CreateTournamentRequest {
     var description = ""
     var url = ""
     var format: TournamentFormat? = null
-    var type: TournamentType? = null
-    var isThirdPlace = false
+    var isHomeAway = false
     var isRandomize = false
     var teams: List<TeamRequest> = ArrayList()
     var groupSetting: GroupSettingRequest? = null

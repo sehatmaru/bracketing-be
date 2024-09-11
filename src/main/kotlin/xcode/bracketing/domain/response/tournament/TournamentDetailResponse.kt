@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import xcode.bracketing.domain.enums.MatchStage
 import xcode.bracketing.domain.enums.TournamentFormat
 import xcode.bracketing.domain.enums.TournamentStatus
-import xcode.bracketing.domain.enums.TournamentType
 import java.util.*
 
 class TournamentDetailResponse {
@@ -14,7 +13,6 @@ class TournamentDetailResponse {
     var description = ""
     var url = ""
     var format: TournamentFormat? = null
-    var type: TournamentType? = null
     var participants = 0
     var groupParticipants = 0
     var groupAdvanceParticipants = 0

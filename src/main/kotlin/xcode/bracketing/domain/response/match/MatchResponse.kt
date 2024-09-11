@@ -12,6 +12,8 @@ class MatchResponse {
     var teamB: TeamMatchResponse? = null
     var winner: Int? = null
     var status: MatchStatus = MatchStatus.WAITING
+    var groupId: Int? = null
+    var number: Int? = null
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "UTC")
     var endAt: Date? = null

@@ -5,7 +5,6 @@ import org.hibernate.annotations.DynamicUpdate
 import xcode.bracketing.domain.enums.MatchStage
 import xcode.bracketing.domain.enums.TournamentFormat
 import xcode.bracketing.domain.enums.TournamentStatus
-import xcode.bracketing.domain.enums.TournamentType
 import java.util.*
 
 @Entity
@@ -35,9 +34,6 @@ class Tournament {
 
     @Column(name = "format")
     var format: TournamentFormat? = null
-
-    @Column(name = "type")
-    var type: TournamentType? = null
 
     @Column(name = "participants")
     var participants = 0
@@ -70,7 +66,7 @@ class Tournament {
     var deletedAt: Date? = null
 
     fun isGroupFormat(): Boolean {
-        return format == TournamentFormat.DOUBLE_ELIMINATION && type == TournamentType.TWO_STAGE
+        return format == TournamentFormat.GROUP
     }
 
     fun isStarted(): Boolean {

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service
 import xcode.bracketing.domain.enums.GroupStatus
 import xcode.bracketing.domain.enums.MatchStage
 import xcode.bracketing.domain.enums.TournamentStatus
-import xcode.bracketing.domain.enums.TournamentType
 import xcode.bracketing.domain.model.CurrentAuth
 import xcode.bracketing.domain.model.Group
 import xcode.bracketing.domain.model.Team
@@ -22,7 +21,6 @@ import xcode.bracketing.domain.response.tournament.*
 import xcode.bracketing.exception.AppException
 import xcode.bracketing.shared.ResponseCode
 import java.util.*
-import kotlin.collections.ArrayList
 
 @Service
 class TournamentService @Autowired constructor(
@@ -49,7 +47,7 @@ class TournamentService @Autowired constructor(
         val teams = generateTeams(tournament.id, request.isRandomize, request.teams)
         var groups: List<Group> = ArrayList()
 
-        if (request.type == TournamentType.TWO_STAGE) {
+        if (tournament.isGroupFormat()) {
             groups = generateGroups(tournament.id, request.groupSetting!!,  teams)
             matchService.generateGroupStageMatches(tournament.id, groups)
         }
