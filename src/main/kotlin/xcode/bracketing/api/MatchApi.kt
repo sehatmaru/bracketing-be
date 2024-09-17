@@ -41,12 +41,12 @@ class MatchApi @Autowired constructor(
             .body(response)
     }
 
-    @PostMapping("/play/{matchId}")
+    @PostMapping("/score/submit/{matchId}")
     fun login(
         @PathVariable("matchId") @Validated id: Int,
         @RequestBody @Validated request: MatchScoreRequest
     ): ResponseEntity<BaseResponse<MatchPlayedResponse>> {
-        val response: BaseResponse<MatchPlayedResponse> = matchService.playMatch(id, request)
+        val response: BaseResponse<MatchPlayedResponse> = matchService.saveScore(id, request)
 
         return ResponseEntity
             .status(HttpStatus.OK)

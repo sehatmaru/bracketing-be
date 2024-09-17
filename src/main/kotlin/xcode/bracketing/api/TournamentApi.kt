@@ -40,6 +40,18 @@ class TournamentApi @Autowired constructor(
             .body(response)
     }
 
+    @GetMapping("/group/list/{tournamentId}")
+    fun getTournamentGroup(
+        @PathVariable("tournamentId") @Validated id: Int
+    ): ResponseEntity<BaseResponse<List<GroupDetailResponse>>> {
+        val response: BaseResponse<List<GroupDetailResponse>> = tournamentService.getTournamentGroup(id)
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(response)
+    }
+
     @GetMapping("/group/detail/{groupId}")
     fun getGroupDetail(@PathVariable("groupId") @Validated id: Int): ResponseEntity<BaseResponse<GroupDetailResponse>> {
         val response: BaseResponse<GroupDetailResponse> = tournamentService.getGroupDetail(id)

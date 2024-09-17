@@ -20,7 +20,6 @@ class TournamentDetailResponse {
     var stage: MatchStage = MatchStage.OTHER
     var status: TournamentStatus = TournamentStatus.WAITING
     var teams: MutableList<TeamTournamentDetail> = mutableListOf()
-    var groups: MutableList<GroupDetailResponse> = mutableListOf()
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "UTC")
     var createdAt: Date? = null

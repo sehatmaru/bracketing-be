@@ -271,7 +271,7 @@ class MatchService @Autowired constructor(
         return result
     }
 
-    fun playMatch(matchId: Int, request: MatchScoreRequest): BaseResponse<MatchPlayedResponse> {
+    fun saveScore(matchId: Int, request: MatchScoreRequest): BaseResponse<MatchPlayedResponse> {
         val result = BaseResponse<MatchPlayedResponse>()
 
         val match = matchRepository.findById(matchId.toString()).orElseThrow {

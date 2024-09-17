@@ -116,6 +116,26 @@ class TournamentService @Autowired constructor(
         return result
     }
 
+    fun getTournamentGroup(tournamentId: Int): BaseResponse<List<GroupDetailResponse>> {
+        val result = BaseResponse<List<GroupDetailResponse>>()
+        val response = mutableListOf<GroupDetailResponse>()
+
+        val tournament = tournamentRepository.findById(tournamentId.toString()).orElseThrow {
+            throw AppException(ResponseCode.NOT_FOUND_MESSAGE)
+        }
+
+        if (!tournament!!.isGroupFormat()) throw AppException("Tournament format is Knockout.")
+
+        val groups = groupRepository.findByTournamentId(tournamentId)
+        groups!!.forEach { e ->
+            response.add(initGroupDetail(e.id))
+        }
+
+        result.setSuccess(response)
+
+        return result
+    }
+
     fun getGroupDetail(groupId: Int): BaseResponse<GroupDetailResponse> {
         val result: BaseResponse<GroupDetailResponse> = BaseResponse()
         val response = initGroupDetail(groupId)
@@ -158,7 +178,7 @@ class TournamentService @Autowired constructor(
         val result: BaseResponse<List<TournamentListResponse>> = BaseResponse()
         val response = mutableListOf<TournamentListResponse>()
 
-        val tournamentList = tournamentRepository.findByCreatedBy(CurrentAuth.get().userId)
+        val tournamentList = tournamentRepository.findByCreatedByAndDeletedAtIsNull(CurrentAuth.get().userId)
 
         tournamentList!!.map { e ->
             response.add(TournamentListResponse().apply {
@@ -188,14 +208,6 @@ class TournamentService @Autowired constructor(
             BeanUtils.copyProperties(e!!, team)
 
             response.teams.add(team)
-        }
-
-        if (tournament.isGroupFormat()) {
-            val groups = groupRepository.findByTournamentId(tournament.id)
-
-            groups!!.forEach { e ->
-                response.groups.add(initGroupDetail(e.id))
-            }
         }
 
         result.setSuccess(response)

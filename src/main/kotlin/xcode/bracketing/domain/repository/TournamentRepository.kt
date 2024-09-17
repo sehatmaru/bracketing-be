@@ -6,5 +6,5 @@ import xcode.bracketing.domain.model.Tournament
 
 @Repository
 interface TournamentRepository : JpaRepository<Tournament?, String?> {
-    fun findByCreatedBy(id: Int): List<Tournament>?
+    fun findByCreatedByAndDeletedAtIsNull(id: Int): List<Tournament>?
 }
